@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+
+# Clave maestra de cifrado (AES-256-GCM) - nunca subir
+.keys/
+
+# Modelos (grandes, no subir a git)
+modelos/*.gguf
+
+# Documentos subidos (grandes, no subir a git)
+documentos/*
+!documentos/.gitkeep
+
+# Logs
+*.log
+/tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# HuggingFace cache
+.cache/
+
+# Old version
+v1/

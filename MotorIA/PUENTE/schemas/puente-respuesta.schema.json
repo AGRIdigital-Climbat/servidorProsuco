@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.motoria.local/puente/puente-respuesta.schema.json",
+  "title": "PuenteResponse",
+  "description": "Body del 200 de POST /puente, y payload del evento `done` de POST /puente/stream. El puente no debe conocer el vocabulario EDAN: `json` va sin validar por forma.",
+  "type": "object",
+  "required": ["respuesta", "formato"],
+  "properties": {
+    "respuesta": {
+      "type": "string",
+      "description": "SIEMPRE string. Si el proveedor devuelve un objeto, se serializa. Nunca [object Object]."
+    },
+    "json": {
+      "type": ["object", "null"],
+      "description": "Objeto ya parseado, para que el cliente no lo parsee con regex. Null cuando no se pudo obtener JSON."
+    },
+    "formato": {
+      "type": "string",
+      "enum": ["texto", "json"],
+      "description": "Como llego la respuesta real. Si se pidio json y no se pudo, es texto y hay un aviso."
+    },
+    "modelo": { "type": "string" },
+    "proveedor": { "type": "string" },
+    "intentos": { "type": "integer", "minimum": 1, "maximum": 3 },
+    "tokens": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entrada": { "type": "integer", "minimum": 0 },
+        "salida": { "type": "integer", "minimum": 0 },
+        "razonamiento": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "avisos": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Para logs, no para mostrar. Valores: json_no_soportado, truncado_por_max_tokens, reintento_por_json_invalido, respuesta_no_string."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "formato": { "const": "json" } }, "required": ["formato"] },
+      "then": {
+        "required": ["json", "modelo", "proveedor", "intentos"],
+        "properties": { "json": { "type": "object" } }
+      }
+    }
+  ],
+  "examples": [
+    {
+      "respuesta": "Lamento mucho lo de Yapacani. Cuantas familias quedaron con su vivienda danada?",
+      "json": {
+        "parche": {
+          "municipio": "Yapacani",
+          "totalAfectada": 350,
+          "tipoEvento": { "inundacion": true },
+          "infraVial": [{ "via": "Ruta 1", "tramo": "cerca del hospital", "danoTotal": "Total" }]
+        }
+      },
+      "formato": "json",
+      "modelo": "openai/gpt-oss-20b",
+      "proveedor": "Groq",
+      "intentos": 1,
+      "tokens": { "entrada": 2640, "salida": 212, "razonamiento": 0 },
+      "avisos": []
+    },
+    {
+      "respuesta": "Lamento mucho lo de Yapacani. Cuantas familias quedaron con su vivienda danada?",
+      "json": null,
+      "formato": "texto",
+      "modelo": "qwen2.5-3b-local",
+      "proveedor": "local",
+      "intentos": 2,
+      "tokens": { "entrada": 2610, "salida": 88, "razonamiento": 0 },
+      "avisos": ["json_no_soportado", "reintento_por_json_invalido"]
+    }
+  ]
+}

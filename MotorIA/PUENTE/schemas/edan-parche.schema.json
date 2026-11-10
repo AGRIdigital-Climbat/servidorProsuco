@@ -1,0 +1,277 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.motoria.local/puente/edan-parche.schema.json",
+  "title": "Parche EDAN",
+  "description": "Lo que el modelo devuelve en json.parche. Derivado de EdanGroqService.parcheDesdeJson. Regla: una clave que no esta aca se rechaza en el schema, pero el cliente la ignora en vez de fallar.",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "txt": {
+      "type": "string",
+      "description": "Vacio o solo espacios = no lo dijo. Se descarta y nunca pisa un dato existente."
+    },
+    "fecha": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "hora": { "type": "string", "pattern": "^\\d{2}:\\d{2}$" },
+    "num": {
+      "type": ["integer", "number", "string"],
+      "description": "Acepta 350 o '350 personas'. Un 0 explicito si cuenta."
+    },
+    "bool": { "type": "boolean" },
+    "filaPoblacion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mujeres": { "type": ["integer", "string", "null"] },
+        "hombres": { "type": ["integer", "string", "null"] },
+        "total": { "type": ["integer", "string", "null"] },
+        "fallecidos": { "type": ["integer", "string", "null"] },
+        "heridos": { "type": ["integer", "string", "null"] },
+        "desaparecidos": { "type": ["integer", "string", "null"] },
+        "observaciones": { "$ref": "#/$defs/txt" }
+      }
+    },
+    "filaServicio": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "danoParcial": { "$ref": "#/$defs/txt" },
+        "danoTotal": { "$ref": "#/$defs/txt" },
+        "necesidades": { "$ref": "#/$defs/txt" },
+        "observaciones": { "$ref": "#/$defs/txt" }
+      }
+    }
+  },
+  "properties": {
+    "departamento": { "$ref": "#/$defs/txt" },
+    "provincia": { "$ref": "#/$defs/txt" },
+    "municipio": { "$ref": "#/$defs/txt" },
+    "alcalde": { "$ref": "#/$defs/txt" },
+    "telefono": { "$ref": "#/$defs/txt" },
+    "fechaLlenado": { "$ref": "#/$defs/fecha" },
+    "fechaEvento": { "$ref": "#/$defs/fecha" },
+    "horaEvento": { "$ref": "#/$defs/hora" },
+    "tipoEventoOtro": { "$ref": "#/$defs/txt" },
+    "responsableNombre": { "$ref": "#/$defs/txt" },
+    "responsableCargo": { "$ref": "#/$defs/txt" },
+    "responsableTelefono": { "$ref": "#/$defs/txt" },
+    "responsableEmail": { "$ref": "#/$defs/txt" },
+    "totalAfectada": { "$ref": "#/$defs/num" },
+    "totalFamiliasAfectadas": { "$ref": "#/$defs/num" },
+    "totalFamiliasDamnificadas": { "$ref": "#/$defs/num" },
+    "viviendasAfectadas": { "$ref": "#/$defs/num" },
+    "viviendasDamnificadas": { "$ref": "#/$defs/num" },
+    "tipoEvento": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "inundacion": { "$ref": "#/$defs/bool" },
+        "riada": { "$ref": "#/$defs/bool" },
+        "deslizamiento": { "$ref": "#/$defs/bool" },
+        "helada": { "$ref": "#/$defs/bool" },
+        "granizada": { "$ref": "#/$defs/bool" },
+        "sequia": { "$ref": "#/$defs/bool" },
+        "incendios": { "$ref": "#/$defs/bool" }
+      }
+    },
+    "impactoPoblacion": {
+      "type": "object",
+      "description": "Solo cuatro grupos. Se comparan sin tildes.",
+      "additionalProperties": false,
+      "properties": {
+        "Niño(a) 0-5 años": { "$ref": "#/$defs/filaPoblacion" },
+        "Escolar 6-18 años": { "$ref": "#/$defs/filaPoblacion" },
+        "Adulto 19-60 años": { "$ref": "#/$defs/filaPoblacion" },
+        "Adulto mayor 60+": { "$ref": "#/$defs/filaPoblacion" }
+      }
+    },
+    "proteccion": {
+      "type": "object",
+      "description": "La API todavia no acepta apoyoPsicosocial ni reposicionDoc, que si existen en el formulario web.",
+      "additionalProperties": false,
+      "properties": {
+        "Niñas y Niños": { "$ref": "#/$defs/filaPoblacion" },
+        "Adolescentes": { "$ref": "#/$defs/filaPoblacion" },
+        "Mujeres Lactantes": { "$ref": "#/$defs/filaPoblacion" },
+        "Mujeres Embarazadas": { "$ref": "#/$defs/filaPoblacion" },
+        "Adultos Mayores": { "$ref": "#/$defs/filaPoblacion" },
+        "Personas con Discapacidad": { "$ref": "#/$defs/filaPoblacion" },
+        "Enfermedad Inhabilitante": { "$ref": "#/$defs/filaPoblacion" }
+      }
+    },
+    "necesidadesHumanitarias": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Alimentos": { "$ref": "#/$defs/bool" },
+        "Refugio y Vivienda": { "$ref": "#/$defs/bool" },
+        "Ropa de Cama": { "$ref": "#/$defs/bool" },
+        "Artículos de Higiene": { "$ref": "#/$defs/bool" },
+        "Artículos de Cocina": { "$ref": "#/$defs/bool" },
+        "Tanques de Agua": { "$ref": "#/$defs/bool" },
+        "Pastillas Potabilizadoras": { "$ref": "#/$defs/bool" },
+        "Filtros Vela": { "$ref": "#/$defs/bool" },
+        "Politubos": { "$ref": "#/$defs/bool" },
+        "Carro Cisterna": { "$ref": "#/$defs/bool" }
+      }
+    },
+    "primeraRespuesta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Búsqueda": { "$ref": "#/$defs/bool" },
+        "Salvamento/Rescate": { "$ref": "#/$defs/bool" },
+        "Evacuación": { "$ref": "#/$defs/bool" }
+      }
+    },
+    "necesidadSalud": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "incendio": { "$ref": "#/$defs/txt" },
+        "inundacion": { "$ref": "#/$defs/txt" },
+        "sequia": { "$ref": "#/$defs/txt" },
+        "otras": { "$ref": "#/$defs/txt" },
+        "observaciones": { "$ref": "#/$defs/txt" }
+      }
+    },
+    "serviciosBasicos": {
+      "type": "object",
+      "description": "Se mapea a energia_electrica, agua_potable, alcantarillado, gas_domiciliario y telecomunicaciones.",
+      "additionalProperties": false,
+      "properties": {
+        "luz": { "$ref": "#/$defs/filaServicio" },
+        "agua": { "$ref": "#/$defs/filaServicio" },
+        "alcantarillado": { "$ref": "#/$defs/filaServicio" },
+        "gas": { "$ref": "#/$defs/filaServicio" },
+        "telecom": { "$ref": "#/$defs/filaServicio" }
+      }
+    },
+    "infraVial": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "via": { "$ref": "#/$defs/txt" },
+          "tramo": { "$ref": "#/$defs/txt" },
+          "danoParcial": { "$ref": "#/$defs/txt" },
+          "danoTotal": { "$ref": "#/$defs/txt" },
+          "kmDanio": { "$ref": "#/$defs/num" },
+          "necesidades": { "$ref": "#/$defs/txt" },
+          "observaciones": { "$ref": "#/$defs/txt" }
+        }
+      }
+    },
+    "infraPublica": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "comunidad": { "$ref": "#/$defs/txt" },
+          "tipoEstructura": { "$ref": "#/$defs/txt" },
+          "danoParcial": { "$ref": "#/$defs/txt" },
+          "danoTotal": { "$ref": "#/$defs/txt" },
+          "necesidades": { "$ref": "#/$defs/txt" },
+          "observaciones": { "$ref": "#/$defs/txt" }
+        }
+      }
+    },
+    "infraProductiva": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tipo": { "$ref": "#/$defs/txt" },
+          "comunidad": { "$ref": "#/$defs/txt" },
+          "danoParcial": { "$ref": "#/$defs/txt" },
+          "danoTotal": { "$ref": "#/$defs/txt" },
+          "necesidades": { "$ref": "#/$defs/txt" },
+          "observaciones": { "$ref": "#/$defs/txt" }
+        }
+      }
+    },
+    "saludDanios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "establecimiento": { "$ref": "#/$defs/txt" },
+          "comunidad": { "$ref": "#/$defs/txt" },
+          "nivel": { "$ref": "#/$defs/txt" },
+          "dano": { "$ref": "#/$defs/txt" },
+          "observaciones": { "$ref": "#/$defs/txt" }
+        }
+      }
+    },
+    "educacion": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "establecimiento": { "$ref": "#/$defs/txt" },
+          "comunidad": { "$ref": "#/$defs/txt" },
+          "danoParcial": { "$ref": "#/$defs/txt" },
+          "danoTotal": { "$ref": "#/$defs/txt" },
+          "suspensionClases": { "$ref": "#/$defs/bool" },
+          "estudiantes": { "$ref": "#/$defs/num" },
+          "observaciones": { "$ref": "#/$defs/txt" }
+        }
+      }
+    },
+    "danosVivienda": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "comunidad": { "$ref": "#/$defs/txt" },
+          "danoParcial": { "$ref": "#/$defs/num" },
+          "danoTotal": { "$ref": "#/$defs/num" },
+          "necesidades": { "$ref": "#/$defs/txt" },
+          "observaciones": { "$ref": "#/$defs/txt" }
+        }
+      }
+    },
+    "agricultura": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "cultivo": { "$ref": "#/$defs/txt" },
+          "hasAfectadas": { "$ref": "#/$defs/num" },
+          "hasPerdidas": { "$ref": "#/$defs/num" },
+          "necesidades": { "$ref": "#/$defs/txt" },
+          "observaciones": { "$ref": "#/$defs/txt" }
+        }
+      }
+    },
+    "pecuario": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "especie": { "$ref": "#/$defs/txt" },
+          "animalesAfectados": { "$ref": "#/$defs/num" },
+          "animalesMuertos": { "$ref": "#/$defs/num" },
+          "necesidades": { "$ref": "#/$defs/txt" },
+          "observaciones": { "$ref": "#/$defs/txt" }
+        }
+      }
+    },
+    "comunidades": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["nombre"],
+        "properties": { "nombre": { "$ref": "#/$defs/txt" } }
+      }
+    }
+  }
+}

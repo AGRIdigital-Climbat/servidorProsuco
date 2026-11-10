@@ -1,0 +1,16 @@
+fastapi==0.136.1
+uvicorn==0.47.0
+llama-cpp-python==0.3.23
+sentence-transformers>=3.0.0
+psycopg2-binary>=2.9.0
+pgvector>=0.3.0
+python-dotenv>=1.0.0
+PyMuPDF>=1.24.0
+numpy>=1.26.0
+openai>=1.0.0
+openai-whisper>=20231117
+python-multipart>=0.0.9
+pydantic>=2.0.0
+pydantic-ai==2.50.0   # agente de descomposicion de preguntas (core/descomposicion.py)
+cryptography>=42.0.0
+jsonschema>=4.0.0   # valida `json` contra el `json_schema` que manda el cliente (/puente)
